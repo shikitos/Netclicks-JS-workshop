@@ -49,8 +49,29 @@ tvShowList.addEventListener('click', event => {
 //Close modal window
 modal.addEventListener('click', event => {
     const target = event.target;
-    if (target.classList.contains('modal') || target.closest('.cross')) {
-        modal.classList.add('hide');
-        document.body.style.overflow = '';
+    if (target.classList.contains('modal') || //click out of the modal?
+        target.closest('.cross')) { //or click at the cross
+        modal.classList.add('hide'); //make modal hidden
+        document.body.style.overflow = ''; //on scroll
     }
 });
+
+
+//Changing of the cards
+const changeImage = event => {
+    const card = event.target.closest('.tv-shows__item');
+    if (card) {
+        const img = card.querySelector('.tv-card__img');
+        if (img.dataset.backdrop) {
+            [img.src, img.dataset.backdrop] = [img.dataset.backdrop, img.src]
+        }
+        //     drop = img.dataset.backdrop;
+        // if (drop) {
+        //     img.dataset.backdrop = img.src;
+        //     img.src = drop;
+        // } ---------but I created by destructuring assignment---- (above this comment)
+    }
+};
+
+tvShowList.addEventListener('mouseover', changeImage); //mouse at the card
+tvShowList.addEventListener('mouseout', changeImage); //mouse out of the card
