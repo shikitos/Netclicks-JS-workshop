@@ -1,3 +1,7 @@
+//Global conts-s
+const API = '5d35ede145339b338e490a96168d6a2b',
+    IMG_URL = 'https://image.tmdb.org/t/p/w185_and_h278_bestv2';
+
 //var-s for left pop-up menu
 const leftMenu = document.querySelector('.left-menu'),
     hamburger = document.querySelector('.hamburger');
@@ -41,7 +45,7 @@ tvShowList.addEventListener('click', event => {
     const target = event.target,
         card = target.closest('.tv-card');
     if (card) {
-        document.body.style.overflow = 'hidden'; //off scroll
+        document.body.style.overflow = 'hidden'; //Off the scroll
         modal.classList.remove('hide'); //make modal visible
     }
 });
@@ -50,10 +54,10 @@ tvShowList.addEventListener('click', event => {
 //Close modal window
 modal.addEventListener('click', event => {
     const target = event.target;
-    if (target.classList.contains('modal') || //click out of the modal?
-        target.closest('.cross')) { //or click at the cross
-        modal.classList.add('hide'); //make modal hidden
-        document.body.style.overflow = ''; //on scroll
+    if (target.classList.contains('modal') || //Click out of the modal?
+        target.closest('.cross')) { //Or click at the cross?
+        modal.classList.add('hide'); //Make modal hidden
+        document.body.style.overflow = ''; //On the scroll
     }
 });
 
@@ -85,19 +89,39 @@ const DBService = class {
         if (res.ok) { //If true 
             return res.json(); //Return this elements
         } else { //Or
-            throw new Error(`Unable to get data from the server at ${url}. Error status: ${res.status}. `) //Catching an error
+            throw new Error(`Unable to get data from the server at ${url}. Error status: ${res.status}. `); //Catching an error
         }
     }
-    getTestData = async() => { //Where we are taking a data
-        return await this.getData('test.json');
+    getTestData = () => { //Where we are taking a data
+        return this.getData('test.json');
     }
 }
 
 const renderCard = response => {
+    tvShowList.textContent = ''; //Clearing the list of the cards
     response.results.forEach(item => { //Iterating through the array
-        const card = document.createElement('li'); //Create an element <li>
+        const {
+            backdrop_path: backdrop,
+            name: title,
+            poster_path: poster,
+            vote_average: vote,
+        } = item; //Take data from JSON for new cards and make destructurization of the data
+        const posterImg = poster ? IMG_URL + poster : 'img/no-poster.jpg', //If we have not poster - change poster at "no-poster.jpg"
+            backdropImg = '', //If we have not backdrop - change backdrop at "no-poster.jpg"
+            voteValue = '', //If we have not vote - change vote at null
+            card = document.createElement('li'); //Create an element <li>
+
+
         card.classList.add('tv-shows__item'); //Add a class for the element
+        card.innerHTML = `
+        <a href="#" class="tv-card">
+            <span class="tv-card__vote">${vote}</span>
+            <img class="tv-card__img" src="${posterImg}" data-backdrop="${IMG_URL + backdrop}" alt="${title}">
+            <h4 class="tv-card__head">${title}</h4>
+        </a>
+        `;
+        tvShowList.append(card); //Add cards under all cards
     });
 };
 
-new DBService().getTestData().then(renderCard()); //Create new cards
+new DBService().getTestData().then(renderCard); //Create new cards
