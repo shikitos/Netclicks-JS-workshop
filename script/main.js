@@ -4,14 +4,22 @@ const API = "5d35ede145339b338e490a96168d6a2b",
 
 //var-s for elements
 const tvShowList = document.querySelector(".tv-shows__list"),
-    modal = document.querySelector(".modal"),
     tvShows = document.querySelector(".tv-shows");
+
+//var-s for modal window elements
+const modal = document.querySelector(".modal"),
+    tvCardImg = document.querySelector(".tv-card__img"),
+    modalTitle = document.querySelector(".modal__title"),
+    genresList = document.querySelector(".genres-list"),
+    rating = document.querySelector(".rating"),
+    description = document.querySelector(".description"),
+    modalLink = document.querySelector(".modal__link");
 
 //var-s for left pop-up menu
 const leftMenu = document.querySelector(".left-menu"),
     hamburger = document.querySelector(".hamburger");
 
-//var for pleloader
+//var for pleloader and add a class
 const loading = document.createElement("div");
 loading.className = "loading";
 
@@ -49,8 +57,24 @@ tvShowList.addEventListener("click", (event) => {
     const target = event.target,
         card = target.closest(".tv-card");
     if (card) {
-        document.body.style.overflow = "hidden"; //Off the scroll
-        modal.classList.remove("hide"); //make modal visible
+        new DBService()
+            .getTestCard()
+            .then((response) => {
+                tvCardImg.src = IMG_URL + response.poster_path;
+                modalTitle.textContent = response.name; //get name
+                genresList.textContent = ""; // Clean the list of the genres
+                for (const item of response.genres) {
+                    genresList.innerHTML += `<li>${item.name}</li>`;
+                } //get genres by the function reduce
+                rating;
+                description;
+                modalLink;
+            })
+            .then(() => {
+                //second then for making load text and after text open modal
+                document.body.style.overflow = "hidden"; //Off the scroll
+                modal.classList.remove("hide"); //make modal visible
+            }); //When you click at the card -- adds data about card in the modal
     }
 });
 
@@ -66,6 +90,8 @@ modal.addEventListener("click", (event) => {
         document.body.style.overflow = ""; //On the scroll
     }
 });
+
+//modal
 
 //Changing the image of the cards
 const changeImage = (event) => {
@@ -86,7 +112,7 @@ const changeImage = (event) => {
 tvShowList.addEventListener("mouseover", changeImage); //mouse at the card
 tvShowList.addEventListener("mouseout", changeImage); //mouse out of the card
 
-//Class - create new cards from json
+//Class - create new cards from json, create new modals for each card
 const DBService = class {
     getData = async(url) => {
         //Get data from json
@@ -102,8 +128,12 @@ const DBService = class {
         }
     };
     getTestData = () => {
-        //Where we are taking a data
+        //Where we are taking a data for cards
         return this.getData("test.json");
+    };
+    getTestCard = () => {
+        //where we are taking a data for modal
+        return this.getData("card.json");
     };
 };
 
@@ -136,4 +166,4 @@ const renderCard = (response) => {
 }; {
     tvShows.append(loading); //create loading -- when our cards are not visible - we see preloader
     new DBService().getTestData().then(renderCard); //Create new cards
-}
+} //it will be a function
