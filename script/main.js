@@ -34,7 +34,9 @@ const posterWrapper = document.querySelector(".poster__wrapper"),
 
 //var for pagination
 const pagination = document.querySelector(".pagination");
-console.log(pagination);
+
+// Instructor's option
+tvShowsHead = document.querySelector(".tv-shows__head");
 
 //Class - create new cards from json, create new modals for each card
 const DBService = class {
@@ -217,10 +219,10 @@ const changeImage = (event) => {
 tvShowList.addEventListener("mouseover", changeImage); //mouse at the card
 tvShowList.addEventListener("mouseout", changeImage); //mouse out of the card
 
-const renderCard = (response) => {
+const renderCard = (response, target) => {
     tvShowList.textContent = ""; //Clear the list of the cards
     const searchResultHeader = document.querySelector(".tv-shows__head"),
-        notFoundExists = document.querySelector("h2");
+        notFoundExists = searchResultHeader.querySelector("h2");
     if (notFoundExists) {
         searchResultHeader.removeChild(notFoundExists);
     }
@@ -272,7 +274,7 @@ const renderCard = (response) => {
 //Handle the search form
 searchForm.addEventListener("submit", (event) => {
     event.preventDefault(); //Remove spaces at the beginning and at the end of the query
-    const value = searchFormInput.value();
+    const value = searchFormInput.value.trim();
     if (value) {
         tvShowList.append(loading); //add loader during search
         dbService.getSearchResult(value).then(renderCard); //search
