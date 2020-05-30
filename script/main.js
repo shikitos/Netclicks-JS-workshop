@@ -1,5 +1,5 @@
 //Global consts-s
-const API = "5d35ede145339b338e490a96168d6a2b",
+const API_KEY = "5d35ede145339b338e490a96168d6a2b",
     API_ENDPOINT = "https://api.themoviedb.org/3",
     IMG_URL = "https://image.tmdb.org/t/p/w185_and_h278_bestv2";
 
@@ -22,7 +22,7 @@ const leftMenu = document.querySelector(".left-menu"),
 
 //var for pleloader and add a class
 const loading = document.createElement("div");
-loading.className = "loading";
+loading.classList.add("loading");
 
 //var-s for search form
 const searchForm = document.querySelector(".search__form"),
@@ -34,6 +34,7 @@ const posterWrapper = document.querySelector(".poster__wrapper"),
 
 //var for pagination
 const pagination = document.querySelector(".pagination");
+console.log(pagination);
 
 //Class - create new cards from json, create new modals for each card
 const DBService = class {
