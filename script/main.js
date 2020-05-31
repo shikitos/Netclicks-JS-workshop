@@ -63,18 +63,19 @@ const DBService = class {
     };
     getSearchResult = (query) => {
         //Taking the data about tv-shows
-        this.temp = `${API_ENDPOINT}/search/tv?api_key=${API_KEY}&query=${query}&language=en-EN`;
+        this.url = `${API_ENDPOINT}/search/tv?api_key=${API_KEY}&query=${query}&language=en-EN`;
         return this.getData(
             `${API_ENDPOINT}/search/tv?api_key=${API_KEY}&query=${query}&language=en-EN`
         );
     };
     getNextPage = (page) => {
-        return this.getData(this.temp + `$page=` + page);
+        return this.getData(this.url + `$page=` + page);
     };
+
     getTvShow = (id) => {
-        return this.getData(
-            `${API_ENDPOINT}/tv/${id}?api_key=${API_KEY}&language=en-EN`
-        );
+        console.log(id);
+        this.url = `${API_ENDPOINT}/tv/${id}?api_key=${API_KEY}&language=en-EN`;
+        return this.getData(this.url);
     };
 
     getTopRated = () =>
@@ -124,28 +125,23 @@ leftMenu.addEventListener("click", (event) => {
     const target = event.target,
         dropdown = target.closest(".dropdown");
     if (dropdown) {
+        // Dropdown menu links
         dropdown.classList.toggle("active");
         leftMenu.classList.add("openMenu");
         hamburger.classList.add("open");
     }
-    // Dropdown menu links
     if (target.closest("#top-rated")) {
         dbService.getTopRated().then((response) => renderCard(response, target));
     }
-
     if (target.closest("#popular")) {
         dbService.getPopular().then((response) => renderCard(response, target));
     }
-
     if (target.closest("#week")) {
         dbService.getWeek().then((response) => renderCard(response, target));
     }
-
     if (target.closest("#today")) {
         dbService.getToday().then((response) => renderCard(response, target));
     }
-
-    // Clear page from posters
     if (target.closest("#search")) {
         tvShowsList.textContent = "";
         tvShowsHead.textContent = "";
@@ -158,6 +154,7 @@ tvShowList.addEventListener("click", (event) => {
     const target = event.target,
         card = target.closest(".tv-card");
     if (card) {
+        tvShows.append(loading);
         dbService
             .getTvShow(card.id)
             .then((response) => {
@@ -176,12 +173,12 @@ tvShowList.addEventListener("click", (event) => {
                 rating.textContent = response.vote_average;
                 description.textContent = response.overview;
                 modalLink.href = response.homepage;
-                loading.remove(); //remove loading after load all cards
             })
             .then(() => {
                 //second then for making load text and after text open modal
                 document.body.style.overflow = "hidden"; //Off the scroll
                 modal.classList.remove("hide"); //make modal visible
+                loading.remove(); //remove loading after load all cards
             }); //When you click at the card -- adds data about card in the modal
     }
 });
