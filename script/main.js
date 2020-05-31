@@ -20,9 +20,13 @@ const modal = document.querySelector(".modal"),
 const leftMenu = document.querySelector(".left-menu"),
     hamburger = document.querySelector(".hamburger");
 
-//var for pleloader and add a class
+//var for loading and add a class
 const loading = document.createElement("div");
-loading.classList.add("loading");
+loading.classList.add("preloader");
+
+//var for preloader for modal window 
+const preloader = document.createElement('div');
+preloader.className = 'loading';
 
 //var-s for search form
 const searchForm = document.querySelector(".search__form"),
@@ -73,9 +77,7 @@ const DBService = class {
     };
 
     getTvShow = (id) => {
-        console.log(id);
-        this.url = `${API_ENDPOINT}/tv/${id}?api_key=${API_KEY}&language=en-EN`;
-        return this.getData(this.url);
+        return this.getData(`${API_ENDPOINT}/tv/${id}?api_key=${API_KEY}&language=en-EN`);
     };
 
     getTopRated = () =>
@@ -154,9 +156,11 @@ tvShowList.addEventListener("click", (event) => {
     const target = event.target,
         card = target.closest(".tv-card");
     if (card) {
-        tvShows.append(loading);
+        preloader;
+        preloader.style.display = 'block';
+        const id = card.dataset.idtv;
         dbService
-            .getTvShow(card.id)
+            .getTvShow(id)
             .then((response) => {
                 if (response.poster_path) {
                     tvCardImg.src = IMG_URL + response.poster_path;
@@ -178,7 +182,7 @@ tvShowList.addEventListener("click", (event) => {
                 //second then for making load text and after text open modal
                 document.body.style.overflow = "hidden"; //Off the scroll
                 modal.classList.remove("hide"); //make modal visible
-                loading.remove(); //remove loading after load all cards
+                preloader.remove(); //remove loading after load all cards
             }); //When you click at the card -- adds data about card in the modal
     }
 });
@@ -242,6 +246,7 @@ const renderCard = (response, target) => {
             name: title,
             poster_path: poster,
             vote_average: vote,
+            id
         } = item; //Take data from JSON for new cards and make destructurization of the data
         const posterImg = poster ? IMG_URL + poster : "img/no-poster.jpg", //If we have not poster - change poster at "no-poster.jpg"
             backdropImg = backdrop ? IMG_URL + backdrop : "img/no-poster.jpg", //If we have not backdrop - change backdrop at "no-poster.jpg"
@@ -250,7 +255,7 @@ const renderCard = (response, target) => {
 
         card.classList.add("tv-shows__item"); //Add a class for the element
         card.innerHTML = `
-        <a href="#" class="tv-card">
+        <a href="#" data-idtv="${id}" class="tv-card">
             ${voteValue}
             <img class="tv-card__img" src="${posterImg}" data-backdrop="${backdropImg}" alt="${title}">
             <h4 class="tv-card__head">${title}</h4>
@@ -260,10 +265,17 @@ const renderCard = (response, target) => {
         tvShowList.append(card); //Add cards under all cards
     });
     //Number of the pages fog pagination
-    pagination.textContent = "";
-    if (!target && response.total_pages > 1) {
-        for (let i = 1; i <= response.total_pages; i++) {
-            pagination.innerHTML += `<li><a href="#" class="pages">${i}</a></li>`;
+    pagination.textContent = " "
+    if (response.total_pages > 1) {
+        const total = response.total_pages <= 7 ? response.total_pages : 7
+        const currentPage = response.page
+        for (let i = 1; i <= total; i++) {
+            if (i === currentPage) {
+                pagination.innerHTML += `<li><a href="#" class="active">${i}</a></li>`
+            } else {
+                pagination.innerHTML += `<li><a href="#" >${i}</a></li>`
+            }
+
         }
     }
 };
