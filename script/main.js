@@ -145,7 +145,7 @@ leftMenu.addEventListener("click", (event) => {
         dbService.getToday().then((response) => renderCard(response, target));
     }
     if (target.closest("#search")) {
-        tvShowsList.textContent = "";
+        tvShowList.textContent = "";
         tvShowsHead.textContent = "";
     }
 });
