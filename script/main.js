@@ -73,7 +73,7 @@ const DBService = class {
         );
     };
     getNextPage = (page) => {
-        return this.getData(this.url + `$page=` + page);
+        return this.getData(this.url + `&page=` + page);
     };
 
     getTvShow = (id) => {
@@ -265,17 +265,11 @@ const renderCard = (response, target) => {
         tvShowList.append(card); //Add cards under all cards
     });
     //Number of the pages fog pagination
-    pagination.textContent = " "
-    if (response.total_pages > 1) {
-        const total = response.total_pages <= 7 ? response.total_pages : 7
-        const currentPage = response.page
-        for (let i = 1; i <= total; i++) {
-            if (i === currentPage) {
-                pagination.innerHTML += `<li><a href="#" class="active">${i}</a></li>`
-            } else {
-                pagination.innerHTML += `<li><a href="#" >${i}</a></li>`
-            }
+    pagination.textContent = '';
 
+    if (!target && response.total_pages > 1) {
+        for (let i = 1; i <= response.total_pages; i++) {
+            pagination.innerHTML += `<li><a href="#" class="pages">${i}</a></li>`;
         }
     }
 };
@@ -297,5 +291,7 @@ pagination.addEventListener("click", (event) => {
     if (target.classList.contains("pages")) {
         tvShows.append(loading);
         dbService.getNextPage(target.textContent).then(renderCard);
+        console.log(dbService.getNextPage(target.textContent));
+
     }
 });
